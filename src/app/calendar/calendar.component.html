@@ -1,0 +1,60 @@
+<div class="container">
+  <div class="header">
+    <button mat-raised-button color="primary" (click)="toggleForm()">
+      {{ showForm ? 'Close' : 'Add Appointment' }}
+    </button>
+    <div class="month-year">{{ currentMonth | date: 'MMMM yyyy' }}</div>
+    <button mat-icon-button (click)="prevMonth()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button mat-icon-button (click)="nextMonth()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <form *ngIf="showForm" [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="appointment-form">
+    <mat-form-field appearance="fill">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date" required>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">
+      {{ editIndex !== null ? 'Update Appointment' : 'Add Appointment' }}
+    </button>
+  </form>
+
+  <div class="calendar">
+    <div class="calendar-header">
+      <div class="day">Sun</div>
+      <div class="day">Mon</div>
+      <div class="day">Tue</div>
+      <div class="day">Wed</div>
+      <div class="day">Thu</div>
+      <div class="day">Fri</div>
+      <div class="day">Sat</div>
+    </div>
+    <div class="calendar-body" cdkDropList (cdkDropListDropped)="onDragDrop($event)">
+      <div class="cell" *ngFor="let day of days" cdkDrag (click)="selectedDate = day">
+        <div class="date">{{ day | date: 'd' }}</div>
+        <div *ngFor="let appointment of getAppointmentsForDate(day)" class="appointment" cdkDrag>
+          <strong>{{ appointment.title }}</strong>
+          <p>{{ appointment.description }}</p>
+          <button mat-button (click)="onEdit(appointments.indexOf(appointment))">Edit</button>
+          <button mat-button color="warn" (click)="onDelete(appointments.indexOf(appointment))">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
